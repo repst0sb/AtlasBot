@@ -14,16 +14,54 @@ import (
 
 var TOKEN string
 
-func getToken() {
+type Response struct {
+	Ok     bool     `json:"ok"`
+	Result []Update `json:"result"`
+}
+
+type Update struct {
+	UpdateID int     `json:"update_id"`
+	Message  Message `json:"message"`
+}
+
+type CallbackQuery struct {
+	ID      string  `json:"id"`
+	From    User    `json:"from"`
+	Message Message `json:"message"`
+	Data    string  `json:"data"`
+}
+
+type User struct {
+	ID         int64  `json:"id"`
+	Is_bot     bool   `json:"is_bot"`
+	First_name string `json:"first_name"`
+}
+
+type Message struct {
+	Chat Chat   `json:"chat"`
+	Text string `json:"text"`
+}
+
+type Chat struct {
+	ID int64 `json:"id"`
+}
+
+type sendMessageReq struct {
+	ChatID int64  `json:"chat_id"`
+	Text   string `json:"text"`
+}
+
+func getToken() error {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
+		return fmt.Errorf("ошибка загрузки .env: %w", err)
 	}
 
 	TOKEN = os.Getenv("BOT_TOKEN")
 	if TOKEN == "" {
-		log.Fatal("Токен не найден в окружении")
+		return fmt.Errorf("токен не найден в окружении")
 	}
+	return err
 }
 
 func getUpdates(offset int) ([]Update, error) {
@@ -50,12 +88,11 @@ func getUpdates(offset int) ([]Update, error) {
 	return resp.Result, nil
 }
 
-func sendMessage(chatID int64, text string, keyboard *InlineKeyboardMarkup) error {
+func sendMessage(chatID int64, text string) error {
 	fmt.Printf("Получено сообщение от %d: %s\n", chatID, text)
 	reqBody := &sendMessageReq{
-		ChatID:       chatID,
-		Text:         text,
-		Reply_markup: keyboard,
+		ChatID: chatID,
+		Text:   text,
 	}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
@@ -71,26 +108,6 @@ func sendMessage(chatID int64, text string, keyboard *InlineKeyboardMarkup) erro
 		resp.Body.Close()
 	}
 	return nil
-}
-
-func answerCallbackQuery(callbackID string) error {
-	reqBody := &answerCallbackQueryReq{CallbackQueryID: callbackID}
-	reqBytes, err := json.Marshal(reqBody)
-	if err != nil {
-		log.Println("Ошибка парсинга JSON:", err)
-		return err
-	}
-	postUrl := fmt.Sprintf("https://api.telegram.org/bot%s/answerCallbackQuery", TOKEN)
-	resp, err := http.Post(postUrl, "application/json", bytes.NewBuffer(reqBytes))
-	if err != nil {
-		log.Println("Ошибка отправки:", err)
-		return err
-	} else {
-		resp.Body.Close()
-	}
-	checkTelegramResponse(resp)
-	return nil
-
 }
 
 func checkTelegramResponse(resp *http.Response) {
