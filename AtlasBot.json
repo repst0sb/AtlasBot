@@ -1,0 +1,79 @@
+{
+  "name": "AtlasBot",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6f059bb2-0739-4dff-ab16-4165de7e7830",
+      "name": "Telegram Trigger",
+      "webhookId": "873d074a-e686-45cd-88e1-d62f8dca60e5",
+      "credentials": {
+        "telegramApi": {
+          "id": "u8u38bYUxex7CugW",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "Привет",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "03686ad9-a52a-49af-8fd3-9f5733d20eaf",
+      "name": "Send a text message",
+      "webhookId": "f523782c-0eba-4df4-84e9-f578e84e5261",
+      "credentials": {
+        "telegramApi": {
+          "id": "u8u38bYUxex7CugW",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5b336466-dba5-4f4a-a683-78f55f85a942",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c16e17344c1016ebdfdd5edcd9ca9dc4a57abd0d117bd73cfe0811668f7d328a"
+  },
+  "nodeGroups": [],
+  "id": "uDTBDD3sOQtiR69b",
+  "tags": []
+}
