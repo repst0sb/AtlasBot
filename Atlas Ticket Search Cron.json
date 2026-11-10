@@ -1,0 +1,313 @@
+{
+  "name": "Atlas Ticket Search Cron",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "46e4e36d-a234-499e-abd1-a6f14c6ebce3",
+      "name": "Cron"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  c_dep.atlas_city_id AS departure_atlas_id,\n  c_dep.name AS departure_name,\n  c_arr.atlas_city_id AS arrival_atlas_id,\n  c_arr.name AS arrival_name,\n  s.date,\n  json_agg(\n    json_build_object(\n      'subscription_id', s.subscription_id,\n      'telegram_id', u.telegram_id,\n      'time_from', s.time_from,\n      'time_to', s.time_to\n    )\n  ) AS subscribers\nFROM subscription s\nJOIN \"user\" u ON s.user_id = u.user_id\nJOIN city c_dep ON s.departure_city_id = c_dep.city_id\nJOIN city c_arr ON s.arrival_city_id = c_arr.city_id\nWHERE s.status = 'ACTIVE' \n  AND s.date >= CURRENT_DATE\nGROUP BY \n  c_dep.atlas_city_id, \n  c_dep.name, \n  c_arr.atlas_city_id, \n  c_arr.name, \n  s.date;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "34a77341-3494-40cf-b5ad-47b3e531f1d6",
+      "name": "Get Unique Routes",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const minDelay = 60; \nconst maxDelay = 90;\nconst randomDelayMs = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;\n\nreturn {\n  json: {\n    ...$input.item.json,\n    delay_ms: randomDelayMs\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "482d1535-8c19-4c00-8abb-4bf5774c7aaf",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": "={{ $json.delay_ms }}"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "892610d7-b764-4602-a774-0ba69baf1573",
+      "name": "Wait Between Requests",
+      "webhookId": "4d9e055b-eecf-4ddc-8aee-f53b28519b7c"
+    },
+    {
+      "parameters": {
+        "url": "https://atlasbus.by/api/search/suggest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from_id",
+              "value": "={{ $json.departure_atlas_id }}"
+            },
+            {
+              "name": "to_id",
+              "value": "={{ $json.arrival_atlas_id }}"
+            },
+            {
+              "name": "date",
+              "value": "={{ $json.date }}"
+            },
+            {
+              "name": "passengers",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        896,
+        0
+      ],
+      "id": "af75f796-0ae6-460c-99d5-fd2b8e50b146",
+      "name": "HTTP Request",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const apiData = $input.item.json;\nconst rides = apiData.rides || [];\n\nconst routeData = $('Get Unique Routes').item.json;\nconst subscribers = routeData.subscribers || [];\n\nconst notifications = [];\n\n// Проверяем, вернул ли API ошибку или валидный ответ Atlas\nconst isInvalidResponse = !apiData || apiData.path === '/api/search' || !Array.isArray(rides);\n\n// Если рейсов нет вовсе или API вернул ошибку/пустой путь\nif (isInvalidResponse || rides.length === 0) {\n  for (const sub of subscribers) {\n    notifications.push({\n      json: {\n        telegram_id: sub.telegram_id,\n        status: 'NO_SCHEDULE',\n        message: `ℹ️ По маршруту ${routeData.departure_name} ➔ ${routeData.arrival_name} на ${routeData.date} продажа билетов ещё не открыта.`\n      }\n    });\n  }\n  return notifications;\n}\n\n// Форматирование цены: если > 500, считаем что это в копейках (3500 -> 35), иначе оставляем как есть\nfunction formatPrice(rawPrice) {\n  if (!rawPrice) return 'Н/Д';\n  const numericPrice = Number(rawPrice);\n  if (isNaN(numericPrice)) return 'Н/Д';\n  const finalPrice = numericPrice > 500 ? numericPrice / 100 : numericPrice;\n  return `${finalPrice} BYN`;\n}\n\nfor (const sub of subscribers) {\n  const matchingRides = [];\n\n  for (const ride of rides) {\n    // Вытаскиваем время из поля ISO строки (например \"2026-11-12T05:00:00\") или готового HH:mm\n    let departureTime = ride.departure || ride.time || '';\n    if (departureTime.includes('T')) {\n      departureTime = departureTime.split('T')[1].substring(0, 5);\n    }\n\n    const freeSeats = ride.free_seats ?? ride.freeSeats ?? 0;\n\n    if (\n      departureTime >= sub.time_from &&\n      departureTime <= sub.time_to &&\n      freeSeats > 0\n    ) {\n      matchingRides.push({\n        time: departureTime,\n        price: formatPrice(ride.price),\n        free_seats: freeSeats\n      });\n    }\n  }\n\n  if (matchingRides.length > 0) {\n    notifications.push({\n      json: {\n        telegram_id: sub.telegram_id,\n        status: 'FOUND',\n        message: `🎉 Появились билеты!\\n\\n🚌 ${routeData.departure_name} ➔ ${routeData.arrival_name}\\n📅 Дата: ${routeData.date}\\n⏰ Твой интервал: ${sub.time_from} – ${sub.time_to}\\n\\nРейсы:\\n` + \n                 matchingRides.map(r => `• ${r.time} — ${r.price} (Мест: ${r.free_seats})`).join('\\n')\n      }\n    });\n  } else {\n    notifications.push({\n      json: {\n        telegram_id: sub.telegram_id,\n        status: 'NO_MATCHING_TIME',\n        message: `⏳ На ${routeData.date} по маршруту ${routeData.departure_name} ➔ ${routeData.arrival_name} есть рейсы, но на твоё время (${sub.time_from} – ${sub.time_to}) свободных мест пока нет.`\n      }\n    });\n  }\n}\n\nreturn notifications;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "a9f87f3d-5a64-4e4a-92d5-492831563f09",
+      "name": "Filter & Match Tickets"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "19395a14-2cd8-4c54-bfac-a2615d988973",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "FOUND",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "6f78fdbe-b68f-4dd7-aaa2-1852e376ae0e",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "={{ $json.last_notified_status }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.4,
+      "position": [
+        1344,
+        0
+      ],
+      "id": "4514de49-c341-40db-9c3a-077eaec9aeea",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.telegram_id }}",
+        "text": "🎉 Появились билеты!\n\n🚌 Маршрут: {{ $json.departure_name }} ➔ {{ $json.arrival_name }}\n📅 Дата: {{ $json.date }}\n\nНайденные рейсы:\n{{ $json.rides.map(r => \"• \" + r.time + \" — \" + r.price + \" (Свободно: \" + r.free_seats + \" шт.)\").join(\"\\n\") }}\n\nБронируй в приложении или на сайте!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        0
+      ],
+      "id": "ec66e55e-a3db-431a-a787-f3d65836fb94",
+      "name": "Send Telegram Notification",
+      "webhookId": "dbf93b2f-0804-427e-a78e-7354203a5197",
+      "credentials": {
+        "telegramApi": {
+          "id": "jOvxSb256Qz5HcjG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE subscriptions \nSET \n  last_notified_status = '{{ $json.status }}',\n  last_notified_at = NOW(),\n  -- Если нашли билеты — завершаем подписку (чтобы больше не мониторить). \n  -- Если нужно продолжать мониторинг — оставь status = 'ACTIVE'.\n  status = CASE \n    WHEN '{{ $json.status }}' = 'FOUND' THEN 'COMPLETED' \n    ELSE status \n  END\nWHERE id = {{ $json.subscription_id }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1984,
+        0
+      ],
+      "id": "eadbe162-842f-478e-9b17-f2b8f09e669c",
+      "name": "Update status found",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Get Unique Routes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unique Routes": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Wait Between Requests",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Between Requests": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Filter & Match Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Match Tickets": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Notification": {
+      "main": [
+        [
+          {
+            "node": "Update status found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b0776fa4-a488-4ece-9a04-45acb222d861",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80c9bf039dcab6ac69be821c72abf96b45570ccd7dac879e6b111c2e638f29e7"
+  },
+  "nodeGroups": [],
+  "id": "ig38yA4sZKOYVFLK",
+  "tags": []
+}

@@ -1,0 +1,155 @@
+{
+  "name": "Atlas Cities Sync",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "113d1524-9cf9-4851-a43c-fb17a5bfc2df",
+      "name": "Start"
+    },
+    {
+      "parameters": {
+        "jsCode": "const alphabet = 'абвгдежзийклмнопрстуфхцчшщэюя'.split('');\n\nreturn alphabet.map(letter => ({\n  json: { letter }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "7a6f55e1-620b-41ac-bc95-4e1e9ba88245",
+      "name": "Generate Alphabet"
+    },
+    {
+      "parameters": {
+        "url": "https://atlasbus.by/api/search/suggest",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user_input",
+              "value": "={{ $json.letter }}"
+            },
+            {
+              "name": "locale",
+              "value": "ru"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "aa64b605-6766-45e4-a733-09c7162543a0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const citiesMap = new Map();\n\nfor (const item of $input.all()) {\n  const city = item.json;\n\n  if (city && city.country === 'BY' && city.id && city.name) {\n    citiesMap.set(String(city.id), String(city.name).trim());\n  }\n}\n\nreturn Array.from(citiesMap.entries()).map(([id, name]) => ({\n  json: {\n    atlas_city_id: id,\n    name: name\n  },\n  pairedItem: []\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e23c6d84-696d-44e5-b1b2-0d4d9cff2adc",
+      "name": "Parse Cities"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO city (name, atlas_city_id)\nVALUES ('{{ $json.name }}', '{{ $json.atlas_city_id }}')\nON CONFLICT (atlas_city_id) DO NOTHING;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        896,
+        0
+      ],
+      "id": "60e7ee04-ab5d-4d12-a909-6688283ff67b",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Generate Alphabet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Alphabet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Parse Cities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Cities": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f7c64a5e-f330-4e5c-b99c-f2183578f3b7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80c9bf039dcab6ac69be821c72abf96b45570ccd7dac879e6b111c2e638f29e7"
+  },
+  "nodeGroups": [],
+  "id": "ytMzott1tOADn5CH",
+  "tags": []
+}
