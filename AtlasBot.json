@@ -49,7 +49,9 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "start"
             },
             {
               "conditions": {
@@ -72,7 +74,9 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "create button"
             },
             {
               "conditions": {
@@ -95,7 +99,9 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "delete button"
             },
             {
               "conditions": {
@@ -118,51 +124,9 @@
                   }
                 ],
                 "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 4
-                },
-                "conditions": [
-                  {
-                    "id": "5da50152-3d23-43ae-8a87-34b3f1d14fed",
-                    "leftValue": "={{ $json.message.text }}",
-                    "rightValue": "=.+ - .+, \\d{4}-\\d{2}-\\d{2}, \\d{2}:\\d{2}-\\d{2}:\\d{2}",
-                    "operator": {
-                      "type": "string",
-                      "operation": "regex"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 4
-                },
-                "conditions": [
-                  {
-                    "id": "05fffd99-2f5b-4138-b320-bbe16bd0f90f",
-                    "leftValue": "={{ $json.message.text }}",
-                    "rightValue": "/del",
-                    "operator": {
-                      "type": "string",
-                      "operation": "startsWith"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "show list  button"
             },
             {
               "conditions": {
@@ -185,7 +149,57 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "bact to menu button"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "05fffd99-2f5b-4138-b320-bbe16bd0f90f",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/del",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "delete  sunscription"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "5da50152-3d23-43ae-8a87-34b3f1d14fed",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "=.+ - .+, \\d{4}-\\d{2}-\\d{2}, \\d{2}:\\d{2}-\\d{2}:\\d{2}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "subscription creation"
             },
             {
               "conditions": {
@@ -207,7 +221,9 @@
                   }
                 ],
                 "combinator": "and"
-              }
+              },
+              "renameOutput": true,
+              "outputKey": "unknown message"
             }
           ]
         },
@@ -221,28 +237,6 @@
       ],
       "id": "8da312f9-8f93-4650-9448-524c6cda095b",
       "name": "identifing message"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO \"user\" (telegram_id, username)\nSELECT {{ $json.message.chat.id }}, '{{ $json.message.from.username }}'\nWHERE NOT EXISTS (\n    SELECT 1 FROM \"user\" WHERE telegram_id = {{ $json.message.chat.id }}\n);",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.7,
-      "position": [
-        624,
-        0
-      ],
-      "id": "95ecbec7-a105-40d0-b144-46eb93e05dee",
-      "name": "user registration",
-      "alwaysOutputData": false,
-      "credentials": {
-        "postgres": {
-          "id": "paVFl7VIjA1DSKXo",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -284,8 +278,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        976,
-        0
+        752,
+        -160
       ],
       "id": "ed51e642-d0e1-48ad-a85f-19ec26cfcaad",
       "name": "start message",
@@ -306,8 +300,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        208
+        752,
+        48
       ],
       "id": "34a6d0eb-c85f-41d7-8211-d23a631477ca",
       "name": "create answer query callback",
@@ -330,8 +324,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        992,
-        208
+        1312,
+        48
       ],
       "id": "d5213173-c32d-4d5c-9a02-5bafc132b071",
       "name": "set parametrs message",
@@ -352,8 +346,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        464
+        752,
+        288
       ],
       "id": "795d5590-d70d-4fdc-b2b5-d2a3280c71fd",
       "name": "delete answer query callback",
@@ -374,8 +368,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        992,
-        464
+        1312,
+        288
       ],
       "id": "f7f894f9-ca54-481a-a287-0ed1d6f9bd1e",
       "name": "search all subscriptions",
@@ -415,8 +409,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        1296,
-        464
+        1600,
+        288
       ],
       "id": "8cd6cdfb-20ed-42b2-8e34-caaeec7b72b1",
       "name": "if subscriptions is not empty"
@@ -428,8 +422,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        192
+        1888,
+        16
       ],
       "id": "8ee57052-fe5b-4c98-8df7-63e788955107",
       "name": "Creating list"
@@ -446,8 +440,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1984,
-        192
+        2128,
+        16
       ],
       "id": "53d11439-e4b5-452b-b9da-58266b4b631a",
       "name": "show list message",
@@ -487,8 +481,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1600,
-        480
+        1888,
+        304
       ],
       "id": "7812555e-1038-4936-9ca4-d7e0eeb922fd",
       "name": "no subscriptions message",
@@ -509,8 +503,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        720
+        752,
+        544
       ],
       "id": "b6df0d9b-fcc0-424b-b039-ac25eee45d6e",
       "name": "list answer query callback",
@@ -531,8 +525,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        992,
-        720
+        1312,
+        544
       ],
       "id": "d7f550d0-581a-464e-9bcb-b57ffeb44d7d",
       "name": "search all subscriptions1",
@@ -572,8 +566,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        1296,
-        720
+        1600,
+        544
       ],
       "id": "d138b2ba-03e0-47fa-8086-2cf90b439fa8",
       "name": "If list empty"
@@ -585,8 +579,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1600,
-        704
+        1888,
+        528
       ],
       "id": "8c722921-92c9-459c-9e99-6d7c9f3638b9",
       "name": "creating delete list "
@@ -619,8 +613,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1632,
-        912
+        1888,
+        752
       ],
       "id": "d8855da0-17cc-4ea2-ade9-c8ca32e40418",
       "name": "no subscriptions message1",
@@ -660,8 +654,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1984,
-        704
+        2160,
+        528
       ],
       "id": "de81f0ef-2380-485a-9e6c-5a4b080ddbb2",
       "name": "show list message1",
@@ -682,8 +676,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        608,
-        928
+        752,
+        800
       ],
       "id": "7ace33e8-5ca0-4c36-9271-5035be44e65b",
       "name": "back to menu answer query callback",
@@ -735,8 +729,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        992,
-        928
+        1024,
+        800
       ],
       "id": "c305d54b-84c9-47d3-8e9f-71b4fa0cc414",
       "name": "main menu message",
@@ -750,157 +744,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const text = $input.item.json.message.text;\nconst [route, date, time] = text.split(', ');\nconst [dep, arr] = route.split(' - ');\nconst [time_from, time_to] = time.split('-');\n\nconst inputDate = new Date(date);\nconst today = new Date();\ntoday.setHours(0, 0, 0, 0); \n\nlet is_valid = true;\nlet error_msg = \"\";\n\nif (inputDate < today) {\n    is_valid = false;\n    error_msg = \"❌ Ошибка: Дата не может быть в прошлом. Пожалуйста, введите актуальную дату.\";\n}\n\nreturn { dep, arr, date, time_from, time_to, is_valid, error_msg };"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        608,
-        1120
-      ],
-      "id": "83c9b58b-c09e-4f6e-9ae9-1e071a24c639",
-      "name": "subscription processing"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 4
-          },
-          "conditions": [
-            {
-              "id": "fd445275-1f95-4d5e-80e4-735328e63a6e",
-              "leftValue": "={{ $json.is_valid }}",
-              "rightValue": "",
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.4,
-      "position": [
-        992,
-        1104
-      ],
-      "id": "3044263c-8c37-4b11-ade0-479c8c2d3ec6",
-      "name": "if date in the past"
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT COUNT(*) as total_subs \nFROM subscription s\nJOIN \"user\" u ON s.user_id = u.user_id\nWHERE u.telegram_id = {{ $('Telegram Trigger').first().json.message.chat.id }};",
+        "query": "INSERT INTO subscription (\n    user_id,\n    departure_city_id,\n    arrival_city_id,\n    date,\n    time_from,\n    time_to,\n    status\n)\nVALUES (\n    (SELECT user_id FROM \"user\" WHERE telegram_id = {{ $('Telegram Trigger').item.json.message.from.id }}),\n    (SELECT city_id FROM city WHERE name = '{{ $('Parse Telegram Input').item.json.dep_name }}' LIMIT 1),\n    (SELECT city_id FROM city WHERE name = '{{ $('Parse Telegram Input').item.json.arr_name }}' LIMIT 1),\n    '{{ $('Parse Telegram Input').item.json.date }}'::date,\n    '{{ $('Parse Telegram Input').item.json.time_from }}'::time,\n    '{{ $('Parse Telegram Input').item.json.time_to }}'::time,\n    'ACTIVE'\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1312,
-        1088
-      ],
-      "id": "8252ff35-ac82-4993-be2f-09640ea6f379",
-      "name": "count number of subscriptions ",
-      "credentials": {
-        "postgres": {
-          "id": "paVFl7VIjA1DSKXo",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "={{ $json.error_msg }}",
-        "replyMarkup": "inlineKeyboard",
-        "inlineKeyboard": {
-          "rows": [
-            {
-              "row": {
-                "buttons": [
-                  {
-                    "text": "🔙 В главное меню",
-                    "additionalFields": {
-                      "callback_data": "back_to_menu"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1312,
-        1312
-      ],
-      "id": "7898b993-3759-4e96-b7d0-2179dd58fa62",
-      "name": "date  error message",
-      "webhookId": "dc254a9c-2fb4-4656-89db-1f3320881b16",
-      "credentials": {
-        "telegramApi": {
-          "id": "jOvxSb256Qz5HcjG",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 4
-          },
-          "conditions": [
-            {
-              "id": "75b3a520-ab5e-4694-ac01-21ab5eab9c6c",
-              "leftValue": "={{ Number($json.total_subs) }}",
-              "rightValue": 2,
-              "operator": {
-                "type": "number",
-                "operation": "lt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.4,
-      "position": [
-        1632,
-        1088
-      ],
-      "id": "8ce962e1-213c-4bc8-ba9f-d947679dbe85",
-      "name": "if less than 2"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "INSERT INTO subscription (user_id, departure_city_id, arrival_city_id, date, time_from, time_to, status)\nSELECT \n    u.user_id,\n    c1.city_id,\n    c2.city_id,\n    '{{ $('subscription processing').item.json.date }}'::date,\n    '{{ $('subscription processing').item.json.time_from }}'::time,\n    '{{ $('subscription processing').item.json.time_to }}'::time,\n    'active'\nFROM \"user\" u\nCROSS JOIN city c1\nCROSS JOIN city c2\nWHERE u.telegram_id = {{ $('Telegram Trigger').first().json.message.chat.id }}\n  AND LOWER(c1.name) = LOWER('{{ $('subscription processing').item.json.dep }}')\n  AND LOWER(c2.name) = LOWER('{{ $('subscription processing').item.json.arr }}')\n  AND c1.city_id != c2.city_id\n  -- Проверка на дубликат:\n  AND NOT EXISTS (\n      SELECT 1 FROM subscription s \n      WHERE s.user_id = u.user_id \n        AND s.departure_city_id = c1.city_id \n        AND s.arrival_city_id = c2.city_id \n        AND s.date = '{{ $('subscription processing').item.json.date }}'::date\n  )\nRETURNING subscription_id;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.7,
-      "position": [
-        1984,
-        1072
+        2848,
+        1232
       ],
       "id": "d3b61dcd-20da-48ef-ace3-fc37944ea6d4",
       "name": "create subscription",
@@ -915,65 +767,7 @@
     {
       "parameters": {
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "🛑 Достигнут лимит! У вас уже есть 2 активных отслеживания. Удалите одно перед созданием нового.",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1984,
-        1296
-      ],
-      "id": "4cabe12d-c4a6-4f26-8872-01c572eb5400",
-      "name": "limit error message",
-      "webhookId": "af08820a-4667-4310-aeab-f2563b836365",
-      "credentials": {
-        "telegramApi": {
-          "id": "jOvxSb256Qz5HcjG",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 4
-          },
-          "conditions": [
-            {
-              "id": "e7e6dffe-9029-40ab-81cb-6e515a610492",
-              "leftValue": "={{ $json.subscription_id }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.4,
-      "position": [
-        2352,
-        1072
-      ],
-      "id": "6beb31b2-b189-467f-8e17-c82670d43a8e",
-      "name": "if error "
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "=✅ Отслеживание успешно создано!\n\n📍 Маршрут:  {{ $('subscription processing').item.json.dep }}- {{ $('subscription processing').item.json.arr }}\n📅 Дата: {{ $('subscription processing').item.json.date }}\n⏰ Время поиска: с {{ $('subscription processing').item.json.time_from }} до {{ $('subscription processing').item.json.time_to }}\nБот пришлет уведомление, как только появятся билеты.",
+        "text": "=✅ Отслеживание успешно создано!\n\n📍 Маршрут: {{ $('Parse Telegram Input').item.json.dep_name }} — {{ $('Parse Telegram Input').item.json.arr_name }}\n📅 Дата: {{ $('Parse Telegram Input').item.json.date }}\n⏰ Время поиска: с {{ $('Parse Telegram Input').item.json.time_from }} до {{ $('Parse Telegram Input').item.json.time_to }}\n\nБот пришлет уведомление, как только появятся билеты.",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -998,190 +792,12 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2720,
-        1056
+        3216,
+        1232
       ],
       "id": "ec74a4d1-175e-41c2-b91e-7184779eda1a",
       "name": "creation complete message",
       "webhookId": "109953f1-b7a9-440c-9e9a-4588a665eb8d",
-      "credentials": {
-        "telegramApi": {
-          "id": "jOvxSb256Qz5HcjG",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT\n    CASE\n        WHEN LOWER('{{ $('subscription processing').item.json.dep }}') = LOWER('{{ $('subscription processing').item.json.arr }}') THEN 'same_city'\n        WHEN NOT EXISTS (SELECT 1 FROM city WHERE LOWER(name) = LOWER('{{ $('subscription processing').item.json.dep }}')) \n          OR NOT EXISTS (SELECT 1 FROM city WHERE LOWER(name) = LOWER('{{ $('subscription processing').item.json.arr }}')) THEN 'invalid_city'\n        ELSE 'duplicate'\n    END as error_reason;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.7,
-      "position": [
-        2736,
-        1344
-      ],
-      "id": "ff250606-b37b-4656-ad05-0bfb6631c2f3",
-      "name": "identifing error",
-      "credentials": {
-        "postgres": {
-          "id": "paVFl7VIjA1DSKXo",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 4
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.error_reason }}",
-                    "rightValue": "same_city",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "d545442c-23d7-44aa-847e-ab280fda9e23"
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 4
-                },
-                "conditions": [
-                  {
-                    "id": "bd76945e-4252-4583-beed-b85bfac1445a",
-                    "leftValue": "={{ $json.error_reason }}",
-                    "rightValue": "invalid_city",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 4
-                },
-                "conditions": [
-                  {
-                    "id": "c192b933-cf31-4b50-99ff-ced01cbbc2ec",
-                    "leftValue": "={{ $json.error_reason }}",
-                    "rightValue": "duplicate",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.5,
-      "position": [
-        3072,
-        1328
-      ],
-      "id": "722434f0-6c5a-48c2-bc32-f960a27dc781",
-      "name": "error type"
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "⚠️ Город отправления и прибытия не могут совпадать",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        3408,
-        1120
-      ],
-      "id": "c8df4e67-9493-4207-a6d9-cf37a16f597b",
-      "name": "the same city error mesage",
-      "webhookId": "0660026a-ef0e-4450-9b1a-90a9346b6663",
-      "credentials": {
-        "telegramApi": {
-          "id": "jOvxSb256Qz5HcjG",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "❌ Один или оба города не найдены в нашей базе. Проверьте правильность написания",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        3408,
-        1344
-      ],
-      "id": "f47b9182-fb4c-4944-83a9-cce5a749b1dc",
-      "name": "no city error message",
-      "webhookId": "af6e32c0-77ff-454d-98de-86ea9f235f37",
-      "credentials": {
-        "telegramApi": {
-          "id": "jOvxSb256Qz5HcjG",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "⚠️ Такое отслеживание уже существует!",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        3408,
-        1584
-      ],
-      "id": "ba0c2921-b759-4ac3-8944-7b82debf542d",
-      "name": "the same subscription error message",
-      "webhookId": "b0919138-c62a-43dc-b33f-a457f7544ba6",
       "credentials": {
         "telegramApi": {
           "id": "jOvxSb256Qz5HcjG",
@@ -1198,8 +814,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        624,
-        1472
+        752,
+        1024
       ],
       "id": "958aee6d-69cd-41a1-a162-01580317beec",
       "name": "delete subscription",
@@ -1240,7 +856,7 @@
       "typeVersion": 1.2,
       "position": [
         1312,
-        1472
+        800
       ],
       "id": "bb3b408c-3832-4a38-89f2-a97bd241f67c",
       "name": "delete message",
@@ -1263,8 +879,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        1712
+        752,
+        1504
       ],
       "id": "00ce34f8-54ed-4e62-81b0-f11a8a5f8670",
       "name": "unknown message",
@@ -1304,8 +920,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        848,
-        1472
+        1024,
+        1024
       ],
       "id": "1f5a86ec-5ed3-4297-aebe-fa86d567c388",
       "name": "If"
@@ -1338,12 +954,362 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1072,
-        1568
+        1296,
+        1040
       ],
       "id": "841151ed-a264-49ea-95c6-ee7a683612c5",
       "name": "Send a text message",
       "webhookId": "8d1e484d-6044-43db-b37c-a73fb70ab0a1",
+      "credentials": {
+        "telegramApi": {
+          "id": "jOvxSb256Qz5HcjG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"user\" (telegram_id, username)\nSELECT {{ $('Telegram Trigger').item.json.callback_query.from.id }}, '{{ $('Telegram Trigger').item.json.callback_query.from.username }}'\nWHERE NOT EXISTS (\n    SELECT 1 FROM \"user\" WHERE telegram_id = {{ $('Telegram Trigger').item.json.callback_query.from.id }}\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1024,
+        48
+      ],
+      "id": "25a4c824-48b2-4ff5-a8ec-090191b17d86",
+      "name": "user registration create",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"user\" (telegram_id, username)\nSELECT {{ $('Telegram Trigger').item.json.callback_query.from.id }}, '{{ $('Telegram Trigger').item.json.callback_query.from.username }}'\nWHERE NOT EXISTS (\n    SELECT 1 FROM \"user\" WHERE telegram_id = {{ $('Telegram Trigger').item.json.callback_query.from.id }}\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1024,
+        288
+      ],
+      "id": "836e0883-ed15-4e97-a070-37a55ab1c77e",
+      "name": "user registration delete",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO \"user\" (telegram_id, username)\nSELECT {{ $('Telegram Trigger').item.json.callback_query.from.id }}, '{{ $('Telegram Trigger').item.json.callback_query.from.username }}'\nWHERE NOT EXISTS (\n    SELECT 1 FROM \"user\" WHERE telegram_id = {{ $('Telegram Trigger').item.json.callback_query.from.id }}\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1024,
+        544
+      ],
+      "id": "58deb98e-958a-4fbc-88cf-4f96bf3bff97",
+      "name": "user registration list",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  (SELECT user_id FROM \"user\" WHERE telegram_id = {{ $json.telegram_id }} LIMIT 1) AS user_id,\n\n  (SELECT city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.dep_name }}')) LIMIT 1) AS dep_city_id,\n  (SELECT atlas_city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.dep_name }}')) LIMIT 1) AS dep_atlas_id,\n\n  (SELECT city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.arr_name }}')) LIMIT 1) AS arr_city_id,\n  (SELECT atlas_city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.arr_name }}')) LIMIT 1) AS arr_atlas_id,\n\n  (\n    SELECT COUNT(*) \n    FROM subscription s\n    WHERE s.user_id = (SELECT user_id FROM \"user\" WHERE telegram_id = {{ $json.telegram_id }} LIMIT 1)\n      AND LOWER(s.status) = 'active'\n  ) AS active_count,\n  (\n    SELECT COUNT(*) \n    FROM subscription s\n    WHERE s.user_id = (SELECT user_id FROM \"user\" WHERE telegram_id = {{ $json.telegram_id }} LIMIT 1)\n      AND s.departure_city_id = (SELECT city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.dep_name }}')) LIMIT 1)\n      AND s.arrival_city_id = (SELECT city_id FROM city WHERE LOWER(TRIM(name)) = LOWER(TRIM('{{ $json.arr_name }}')) LIMIT 1)\n      AND s.date = '{{ $json.date }}'::date\n      AND s.time_from = '{{ $json.time_from }}'::time\n      AND s.time_to = '{{ $json.time_to }}'::time\n      AND LOWER(s.status) = 'active'\n  ) AS duplicate_count;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1024,
+        1248
+      ],
+      "id": "8252ff35-ac82-4993-be2f-09640ea6f379",
+      "name": "filter",
+      "credentials": {
+        "postgres": {
+          "id": "paVFl7VIjA1DSKXo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.all()[0].json.message;\nconst text = message.text;\nconst telegramUser = message.from;\n\n// Вспомогательная функция полной очистки строки от лишних пробелов\nfunction cleanStr(str) {\n  return (str || '').toString().trim().replace(/\\s+/g, ' ');\n}\n\n// Нормализация времени: обрезаем пробелы и приводим \"8:00\" -> \"08:00\"\nfunction cleanTime(t) {\n  let cleaned = cleanStr(t);\n  if (/^\\d:\\d{2}$/.test(cleaned)) {\n    cleaned = '0' + cleaned;\n  }\n  return cleaned;\n}\n\n// Разбиваем ввод пользователя по запятым\nconst parts = text.split(',').map(s => cleanStr(s));\nconst route = parts[0] || '';\nconst date = parts[1] || '';\nconst time = parts[2] || '';\n\n// Разбиваем маршрут по дефису\nconst routeParts = route.split('-').map(s => cleanStr(s));\nconst dep_name = routeParts[0] || '';\nconst arr_name = routeParts[1] || '';\n\n// Разбиваем время по дефису\nconst timeParts = time.split('-').map(s => cleanStr(s));\nconst time_from = cleanTime(timeParts[0] || '');\nconst time_to = cleanTime(timeParts[1] || '');\n\nreturn {\n  json: {\n    telegram_id: telegramUser.id,\n    username: cleanStr(telegramUser.username),\n    first_name: cleanStr(telegramUser.first_name),\n    dep_name,\n    arr_name,\n    date,\n    time_from,\n    time_to\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        1248
+      ],
+      "id": "83c9b58b-c09e-4f6e-9ae9-1e071a24c639",
+      "name": "Parse Telegram Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const sqlResult = $('filter').first().json;\nconst inputData = $('Parse Telegram Input').first().json;\n\nconst MAX_LIMIT = 2;\nlet error = null;\n\nfunction isValidTimeFormat(t) {\n  return /^([01]\\d|2[0-3]):([0-5]\\d)$/.test(t || '');\n}\n\nfunction isValidDateFormat(d) {\n  return /^\\d{4}-\\d{2}-\\d{2}$/.test(d || '');\n}\n\n// 1. Проверка существования городов в базе\nif (!sqlResult.dep_city_id) {\n  error = `❌ Город отправления \"${inputData.dep_name}\" не найден в базе.`;\n} else if (!sqlResult.arr_city_id) {\n  error = `❌ Город прибытия \"${inputData.arr_name}\" не найден в базе.`;\n}\n// 2. Проверка на одинаковые города\nelse if (Number(sqlResult.dep_city_id) === Number(sqlResult.arr_city_id)) {\n  error = '❌ Город отправления и прибытия не могут совпадать!';\n}\n// 3. Проверка лимита подписок\nelse if (Number(sqlResult.active_count || 0) >= MAX_LIMIT) {\n  error = `⚠️ У тебя уже создано максимальное количество подписок (${MAX_LIMIT}). Удали старые, чтобы создать новую!`;\n}\n// 4. Проверка точного дубликата\nelse if (Number(sqlResult.duplicate_count || 0) > 0) {\n  error = 'ℹ️ У тебя уже есть точно такая же активная подписка!';\n}\n// 5. Проверка формата даты и времени\nelse if (!isValidDateFormat(inputData.date)) {\n  error = '❌ Некорректный формат даты! Используй формат ГГГГ-ММ-ДД (например, 2026-11-12).';\n}\nelse if (!isValidTimeFormat(inputData.time_from) || !isValidTimeFormat(inputData.time_to)) {\n  error = '❌ Некорректный формат времени! Используй ЧЧ:ММ (например, 07:00 или 18:30).';\n}\n// 6. Проверка интервала (время ОТ < ДО)\nelse if (inputData.time_from >= inputData.time_to) {\n  error = '❌ Время \"ДО\" должно быть строго позже времени \"ОТ\"!';\n}\n// 7. Проверка даты (не в прошлом)\nelse {\n  const selectedDate = new Date(inputData.date);\n  const today = new Date();\n  today.setHours(0, 0, 0, 0);\n\n  if (selectedDate < today) {\n    error = '❌ Нельзя выбрать дату в прошлом!';\n  }\n}\n\nreturn {\n  json: {\n    isValid: !error,\n    errorMessage: error,\n    user_id: sqlResult.user_id,\n    dep_city_id: sqlResult.dep_city_id,\n    dep_atlas_id: sqlResult.dep_atlas_id,\n    arr_city_id: sqlResult.arr_city_id,\n    arr_atlas_id: sqlResult.arr_atlas_id,\n    dep_name: inputData.dep_name,\n    arr_name: inputData.arr_name,\n    date: inputData.date,\n    time_from: inputData.time_from,\n    time_to: inputData.time_to,\n    telegram_id: inputData.telegram_id\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        1248
+      ],
+      "id": "a44d0a27-8e98-411b-ab7c-a407db566edb",
+      "name": "Validation Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "7237481e-4ae6-4deb-bc99-78441044e411",
+              "leftValue": "={{ $json.isValid }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1584,
+        1248
+      ],
+      "id": "80cbe41b-8aec-4cd7-a553-a5cdfad99564",
+      "name": "If valid"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Validation Code').item.json.errorMessage }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1904,
+        1504
+      ],
+      "id": "82cd5e86-233f-4a76-b9e7-cc9b861bb65c",
+      "name": "error message",
+      "webhookId": "c8d56487-5cc5-4348-afe9-72346aa93517",
+      "credentials": {
+        "telegramApi": {
+          "id": "jOvxSb256Qz5HcjG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://atlasbus.by/api/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from_id",
+              "value": "={{ $json.dep_atlas_id }}"
+            },
+            {
+              "name": "to_id",
+              "value": "={{ $json.arr_atlas_id }}"
+            },
+            {
+              "name": "date",
+              "value": "={{ $json.date }}"
+            },
+            {
+              "name": "passengers",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1904,
+        1232
+      ],
+      "id": "41736072-3f6f-4148-9c16-7177943c3c35",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\n\nconst timeFrom = response.time_from || $('Parse Telegram Input').first()?.json?.time_from || '00:00';\nconst timeTo = response.time_to || $('Parse Telegram Input').first()?.json?.time_to || '23:59';\n\n// 1. Если API вернет ошибку (нет такого маршрута или дата совсем не существует)\nif (response.path && response.timestamp) {\n  return [{\n    json: {\n      action: 'NOTIFY_DATE_NOT_OPEN',\n      message: '📅 На эту дату продажи ещё не открыты или маршрут не существует.'\n    }\n  }];\n}\n\nconst rawRides = response.rides || [];\nconst calendar = response.calendar || [];\n\n// 2. Если календаря нет вовсе — дата закрыта\nif (!calendar || !Array.isArray(calendar) || calendar.length === 0) {\n  return [{\n    json: {\n      action: 'NOTIFY_DATE_NOT_OPEN',\n      message: '📅 Продажа билетов на эту дату ещё не открыта.'\n    }\n  }];\n}\n\n// 3. Фильтруем рейсы, которые ПОПАДАЮТ в интервал пользователя и ИМЕЮТ места > 0\nconst availableRides = rawRides.filter(ride => {\n  const rideTime = ride.departure.split('T')[1].slice(0, 5); // HH:mm\n  return rideTime >= timeFrom && rideTime <= timeTo && (ride.freeSeats || 0) > 0;\n});\n\n// 4. ЕСЛИ ДОСТУПНЫХ МЕСТ НЕТ — ОТПРАВЛЯЕМ НА СОЗДАНИЕ ПОДПИСКИ (ADD_TO_TRACKING)\nif (availableRides.length === 0) {\n  return [{\n    json: {\n      action: 'ADD_TO_TRACKING',\n      message: `😔 На промежуток с ${timeFrom} до ${timeTo} свободных мест нет. Поставили маршрут на отслеживание!`\n    }\n  }];\n}\n\n// 5. Если свободные места есть — сортируем по времени и отдаем первые 10\navailableRides.sort((a, b) => new Date(a.departure) - new Date(b.departure));\nconst top10 = availableRides.slice(0, 10);\n\nlet messageText = `🚌 *Найдено рейсов: ${availableRides.length}*\\n`;\nif (availableRides.length > 10) {\n  messageText += `_Показаны первые 10_\\n`;\n}\nmessageText += `\\n`;\n\nmessageText += top10.map(r => {\n  const depTime = r.departure.split('T')[1].slice(0, 5);\n  const arrTime = r.arrival.split('T')[1].slice(0, 5);\n  const currency = r.currency || 'BYN';\n  \n  return `⏰ *${depTime}* ➔ *${arrTime}*\\n💰 *${r.price} ${currency}*  |  💺 Мест: *${r.freeSeats}*`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    action: 'SHOW_RIDES',\n    count: availableRides.length,\n    formattedText: messageText\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        1232
+      ],
+      "id": "05905830-da3b-4007-a47e-15a537a4594c",
+      "name": "Parse Atlas & Define Action"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "40573b88-5a08-49f8-a242-f8fbca3e12a2",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "=NOTIFY_DATE_NOT_OPEN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "f2e9c7b4-136b-4ee8-a040-59fdb4cc0b50",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "ADD_TO_TRACKING",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "2a2ef28c-321f-4cda-b142-739339491630",
+                    "leftValue": "={{ $json.action }}",
+                    "rightValue": "SHOW_RIDES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        2512,
+        1216
+      ],
+      "id": "3adb1fee-babd-489b-bea7-5c2c5cc4a4a1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2848,
+        928
+      ],
+      "id": "e16c9df5-a75f-459a-8a01-6c910e77b7e0",
+      "name": "Send a text message2",
+      "webhookId": "aa46c6f5-0b7d-4d34-aa3e-e0ae9dfac0a5",
+      "credentials": {
+        "telegramApi": {
+          "id": "jOvxSb256Qz5HcjG",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.formattedText }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2848,
+        1472
+      ],
+      "id": "25fab58f-2ab2-4119-a851-f05891254ecf",
+      "name": "Send a text message3",
+      "webhookId": "96826aa0-e5b2-4e84-be8c-8faaa9674934",
       "credentials": {
         "telegramApi": {
           "id": "jOvxSb256Qz5HcjG",
@@ -1369,7 +1335,7 @@
       "main": [
         [
           {
-            "node": "user registration",
+            "node": "start message",
             "type": "main",
             "index": 0
           }
@@ -1397,7 +1363,7 @@
         ],
         [
           {
-            "node": "subscription processing",
+            "node": "back to menu answer query callback",
             "type": "main",
             "index": 0
           }
@@ -1411,7 +1377,7 @@
         ],
         [
           {
-            "node": "back to menu answer query callback",
+            "node": "Parse Telegram Input",
             "type": "main",
             "index": 0
           }
@@ -1425,22 +1391,11 @@
         ]
       ]
     },
-    "user registration": {
-      "main": [
-        [
-          {
-            "node": "start message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "create answer query callback": {
       "main": [
         [
           {
-            "node": "set parametrs message",
+            "node": "user registration create",
             "type": "main",
             "index": 0
           }
@@ -1451,7 +1406,7 @@
       "main": [
         [
           {
-            "node": "search all subscriptions",
+            "node": "user registration delete",
             "type": "main",
             "index": 0
           }
@@ -1502,7 +1457,7 @@
       "main": [
         [
           {
-            "node": "search all subscriptions1",
+            "node": "user registration list",
             "type": "main",
             "index": 0
           }
@@ -1560,123 +1515,11 @@
         ]
       ]
     },
-    "subscription processing": {
-      "main": [
-        [
-          {
-            "node": "if date in the past",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "if date in the past": {
-      "main": [
-        [
-          {
-            "node": "count number of subscriptions ",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "date  error message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "count number of subscriptions ": {
-      "main": [
-        [
-          {
-            "node": "if less than 2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "if less than 2": {
-      "main": [
-        [
-          {
-            "node": "create subscription",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "limit error message",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "create subscription": {
       "main": [
         [
           {
-            "node": "if error ",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "if error ": {
-      "main": [
-        [
-          {
             "node": "creation complete message",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "identifing error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "identifing error": {
-      "main": [
-        [
-          {
-            "node": "error type",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "error type": {
-      "main": [
-        [
-          {
-            "node": "the same city error mesage",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "no city error message",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "the same subscription error message",
             "type": "main",
             "index": 0
           }
@@ -1711,6 +1554,137 @@
           }
         ]
       ]
+    },
+    "user registration create": {
+      "main": [
+        [
+          {
+            "node": "set parametrs message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user registration delete": {
+      "main": [
+        [
+          {
+            "node": "search all subscriptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user registration list": {
+      "main": [
+        [
+          {
+            "node": "search all subscriptions1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filter": {
+      "main": [
+        [
+          {
+            "node": "Validation Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Telegram Input": {
+      "main": [
+        [
+          {
+            "node": "filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validation Code": {
+      "main": [
+        [
+          {
+            "node": "If valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If valid": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Parse Atlas & Define Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Atlas & Define Action": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "create subscription",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -1718,7 +1692,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "76679b60-b675-4db0-9b2a-9bdff3ffbbb3",
+  "versionId": "fb651707-a9b5-4e7c-b8fd-4c8d6ae78d32",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "80c9bf039dcab6ac69be821c72abf96b45570ccd7dac879e6b111c2e638f29e7"
